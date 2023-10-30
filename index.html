@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Centered Map and Iframe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <style>
+    /* Set the iframe to cover the entire viewport */
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    /* Center the map frame within the window */
+    #map {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%; /* Adjust the width as needed */
+      height: 80vh; /* Adjust the height as needed */
+      background: transparent;
+    }
+  </style>
+</head>
+<body>
+  <iframe src="https://embed.windy.com/embed2.html?lat=-40.685248&lon=174.612448&detailLat=-40.685248&detailLon=174.768&zoom=6.48&level=surface&overlay=clouds&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1" frameborder="0" id="windy-iframe"></iframe>
+  <div id="map"></div>
+
+  <script>
+    var map = L.map('map', {
+        dragging: false, // Disable map panning
+      scrollWheelZoom: false, // Disable zoom with mouse scroll wheel
+    }).setView([-40.685248, 174.612448], 6.48);
+
+    // Add Windy.com content as a base layer
+    var windyLayer = L.tileLayer('https://embed.windy.com/embed2.html?lat=-40.685248&lon=174.612448&detailLat=-40.685248&detailLon=174.768&zoom=6.48&level=surface&overlay=clouds&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1', {
+      attribution: 'Windy.com'
+    }).addTo(map);
+
+    //     // Define a custom style function for GeoJSON features
+    //     function geoJSONStyle(feature) {
+    //   var fillColor;
+    //   if (feature.properties.layer === 'geojsonLayer1') {
+    //     color: 'green',
+    //     fillColor = 'green'; // Set fill color for the first layer
+    //   } else if (feature.properties.layer === 'geojsonLayer2') {
+    //     fillColor = 'green'; // Set fill color for the second layer
+    //   }
+
+    //   // return {
+    //   //   fillColor: fillColor,
+    //   //   color: 'blue',      // Set the outline color (for both layers)
+    //   //   weight: 2,         // Outline width
+    //   //   opacity: 1,        // Outline opacity
+    //   // };
+    // }
+
+        // Define a custom style function for GeoJSON features in the first layer
+        function geoJSONStyleLayer1(feature) {
+      return {
+        fillColor: 'blue', // Set fill color for the first layer
+        color: 'blue',      // Set the outline color
+        weight: 2,         // Outline width
+        opacity: 1,        // Outline opacity
+      };
+    }
+
+    // Define a custom style function for GeoJSON features in the second layer
+    function geoJSONStyleLayer2(feature) {
+      return {
+        fillColor: 'red', // Set fill color for the second layer
+        color: 'red',      // Set the outline color
+        weight: 2,         // Outline width
+        opacity: 1,        // Outline opacity
+      };
+    }
+
+    // Load and add the first GeoJSON data to the map with custom style
+    fetch('Data/2023-2024 ASL Imagery Capture - Unflown.geojson')
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (geojson) {
+        var geojsonLayer1 = L.geoJSON(geojson, {
+          style: geoJSONStyleLayer1 // Apply the custom style function
+        });
+
+        // Add the first GeoJSON layer to the map
+        geojsonLayer1.addTo(map);
+      });
+
+    // Load and add the second GeoJSON data to the map with custom style
+    fetch('Data/2023-2024 ASL LiDAR Capture - Unflown.geojson')
+      .then(function (response) {
+        return response.json();
+      })
+      .then(function (geojson) {
+        var geojsonLayer2 = L.geoJSON(geojson, {
+          style: geoJSONStyleLayer2 // Apply the custom style function
+        });
+
+        // Add the second GeoJSON layer to the map
+        geojsonLayer2.addTo(map);
+      });
+
+        // Listen for messages from the Windy iframe and adjust Leaflet map zoom
+        window.addEventListener('message', function (event) {
+      if (event.source === windyIframe.contentWindow && event.data && event.data.zoom !== undefined) {
+        var windyZoom = event.data.zoom;
+        var leafletZoom = 6.2 - windyZoom; // Adjust Leaflet's zoom level dynamically
+        map.setZoom(leafletZoom);
+      }
+    });
+
+    // Listen for Leaflet map zoom changes and adjust the Windy iframe zoom
+    map.on('zoomend', function () {
+      var leafletZoom = map.getZoom();
+      var windyZoom = 6.2 - leafletZoom; // Adjust Windy's zoom level dynamically
+      var iframe = document.getElementById('windy-iframe');
+      iframe.contentWindow.postMessage({ zoom: windyZoom }, '*');
+    });
+  </script>
+</body>
+</html>
