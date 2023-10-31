@@ -43,24 +43,6 @@
       attribution: 'Windy.com'
     }).addTo(map);
 
-    //     // Define a custom style function for GeoJSON features
-    //     function geoJSONStyle(feature) {
-    //   var fillColor;
-    //   if (feature.properties.layer === 'geojsonLayer1') {
-    //     color: 'green',
-    //     fillColor = 'green'; // Set fill color for the first layer
-    //   } else if (feature.properties.layer === 'geojsonLayer2') {
-    //     fillColor = 'green'; // Set fill color for the second layer
-    //   }
-
-    //   // return {
-    //   //   fillColor: fillColor,
-    //   //   color: 'blue',      // Set the outline color (for both layers)
-    //   //   weight: 2,         // Outline width
-    //   //   opacity: 1,        // Outline opacity
-    //   // };
-    // }
-
         // Define a custom style function for GeoJSON features in the first layer
         function geoJSONStyleLayer1(feature) {
       return {
