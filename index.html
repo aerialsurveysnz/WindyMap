@@ -27,21 +27,48 @@
       background: transparent;
     }
   </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <iframe src="https://embed.windy.com/embed2.html?lat=-40.685248&lon=174.612448&detailLat=-40.685248&detailLon=174.768&zoom=6.48&level=surface&overlay=clouds&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1" frameborder="0" id="windy-iframe"></iframe>
+  <iframe
+  id="windy-iframe"
+  frameborder="0"
+></iframe>
+
   <div id="map"></div>
 
   <script>
-    var map = L.map('map', {
-        dragging: false, // Disable map panning
-      scrollWheelZoom: false, // Disable zoom with mouse scroll wheel
-    }).setView([-40.685248, 174.612448], 6.48);
 
-    // Add Windy.com content as a base layer
-    var windyLayer = L.tileLayer('https://embed.windy.com/embed2.html?lat=-40.685248&lon=174.612448&detailLat=-40.685248&detailLon=174.768&zoom=6.48&level=surface&overlay=clouds&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1', {
-      attribution: 'Windy.com'
-    }).addTo(map);
+        // Set the latitude, longitude, and zoom level as variables
+        var latitude = -40.685248;
+    var longitude = 174.612448;
+    var zoom = 6.48; // Set your desired zoom level here
+
+    // Create the URL with variables
+    var windyUrl = `https://embed.windy.com/embed2.html?lat=${latitude}&lon=${longitude}&detailLat=${latitude}&detailLon=${longitude}&zoom=${zoom}&level=surface&overlay=clouds&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
+
+        // Create the URL with variables
+        function updateWindyURL() {
+      var windyUrl = `https://embed.windy.com/embed2.html?lat=${latitude}&lon=${longitude}&detailLat=${latitude}&detailLon=${longitude}&zoom=${zoom}&level=surface&overlay=clouds&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
+
+      // Set the iframe's src attribute to the dynamic URL
+      var iframe = document.getElementById("windy-iframe");
+      iframe.src = windyUrl;
+    }
+
+    // Set the iframe's src attribute to the dynamic URL
+    var iframe = document.getElementById("windy-iframe");
+    iframe.src = windyUrl;
+
+    var map = L.map('map', {
+       // dragging: false, // Disable map panning
+      //scrollWheelZoom: false, // Disable zoom with mouse scroll wheel
+    }).setView([latitude, longitude], zoom);
+
+    // // Add Windy.com content as a base layer
+    // var windyLayer = L.tileLayer('https://embed.windy.com/embed2.html?lat=-40.685248&lon=174.612448&detailLat=-40.685248&detailLon=174.768&zoom=6.48&level=surface&overlay=clouds&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1', {
+    //   attribution: 'Windy.com'
+    // }).addTo(map);
 
         // Define a custom style function for GeoJSON features in the first layer
         function geoJSONStyleLayer1(feature) {
@@ -91,22 +118,21 @@
         geojsonLayer2.addTo(map);
       });
 
-        // Listen for messages from the Windy iframe and adjust Leaflet map zoom
-        window.addEventListener('message', function (event) {
-      if (event.source === windyIframe.contentWindow && event.data && event.data.zoom !== undefined) {
-        var windyZoom = event.data.zoom;
-        var leafletZoom = 6.2 - windyZoom; // Adjust Leaflet's zoom level dynamically
-        map.setZoom(leafletZoom);
-      }
+          // Listen for zoom changes and update the zoom variable
+    map.on('zoomend', function () {
+      zoom = map.getZoom();
+      updateWindyURL(); // Update the Windy.com iframe URL
     });
 
-    // Listen for Leaflet map zoom changes and adjust the Windy iframe zoom
-    map.on('zoomend', function () {
-      var leafletZoom = map.getZoom();
-      var windyZoom = 6.2 - leafletZoom; // Adjust Windy's zoom level dynamically
-      var iframe = document.getElementById('windy-iframe');
-      iframe.contentWindow.postMessage({ zoom: windyZoom }, '*');
+        // Listen for map panning and update latitude and longitude variables
+        map.on('move', function () {
+      var center = map.getCenter();
+      latitude = center.lat;
+      longitude = center.lng;
+      updateWindyURL(); // Update the Windy.com iframe URL
     });
+    
   </script>
 </body>
 </html>
+
