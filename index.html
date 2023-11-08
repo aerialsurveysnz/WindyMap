@@ -7,50 +7,54 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
   <style>
-    /* Set the iframe to cover the entire viewport */
+
     iframe {
       position: absolute;
       top: 0;
-      left: 0;
+      left: 50%;
+      transform: translate(-50%, 0%);
       width: 100%;
       height: 100%;
       border: none;
+      z-index: 1; /* Place it below the masking element */
     }
+
     /* Center the map frame within the window */
     #map {
       position: absolute;
       top: 50%;
       left: 50%;
+     
       transform: translate(-50%, -50%);
       width: 80%; /* Adjust the width as needed */
-      height: 88vh; /* Adjust the height as needed */
+      height: 90%; /* Adjust the height as needed */
       background: transparent;
       border: 1px solid #000; /* Add a 1px solid black border */
+      z-index: 2; /* Place it below the masking element */
     }
+
   </style>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <iframe
-  id="windy-iframe"
-  frameborder="0"
-></iframe>
+  
+  <iframe   id="windy-iframe"   frameborder="0"  ></iframe>
 
-  <div id="map"></div>
-
+  <div id="map"> </div>
+  
   <script>
 
-        // Set the latitude, longitude, and zoom level as variables
-        var latitude = -40.685248;
+    // Set the latitude, longitude, and zoom level as variables
+    var latitude = -40.685248;
     var longitude = 174.612448;
     var zoom = 6.48; // Set your desired zoom level here
 
     // Create the URL with variables
     var windyUrl = `https://embed.windy.com/embed2.html?lat=${latitude}&lon=${longitude}&detailLat=${latitude}&detailLon=${longitude}&zoom=${zoom}&level=surface&overlay=clouds&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
 
-        // Create the URL with variables
-        function updateWindyURL() {
-      var windyUrl = `https://embed.windy.com/embed2.html?lat=${latitude}&lon=${longitude}&detailLat=${latitude}&detailLon=${longitude}&zoom=${zoom}&level=surface&overlay=clouds&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
+    // Create the URL with variables
+    function updateWindyURL() {
+    var windyUrl = `https://embed.windy.com/embed2.html?lat=${latitude}&lon=${longitude}&detailLat=${latitude}&detailLon=${longitude}&zoom=${zoom}&level=surface&overlay=clouds&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
 
       // Set the iframe's src attribute to the dynamic URL
       var iframe = document.getElementById("windy-iframe");
@@ -62,14 +66,11 @@
     iframe.src = windyUrl;
 
     var map = L.map('map', {
+      zoomControl: false // Disable map panning
        // dragging: false, // Disable map panning
       //scrollWheelZoom: false, // Disable zoom with mouse scroll wheel
-    }).setView([latitude, longitude], zoom);
+    }).setView([latitude, longitude ], zoom );
 
-    // // Add Windy.com content as a base layer
-    // var windyLayer = L.tileLayer('https://embed.windy.com/embed2.html?lat=-40.685248&lon=174.612448&detailLat=-40.685248&detailLon=174.768&zoom=6.48&level=surface&overlay=clouds&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1', {
-    //   attribution: 'Windy.com'
-    // }).addTo(map);
 
         // Define a custom style function for GeoJSON features in the first layer
         function geoJSONStyleLayer1(feature) {
