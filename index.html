@@ -48,13 +48,14 @@
     var latitude = -40.685248;
     var longitude = 174.612448;
     var zoom = 6.48; // Set your desired zoom level here
+    var weatherlayer = 'clouds';
 
     // Create the URL with variables
-    var windyUrl = `https://embed.windy.com/embed2.html?lat=${latitude}&lon=${longitude}&detailLat=${latitude}&detailLon=${longitude}&zoom=${zoom}&level=surface&overlay=clouds&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
+    var windyUrl = `https://embed.windy.com/embed2.html?lat=${latitude}&lon=${longitude}&detailLat=${latitude}&detailLon=${longitude}&zoom=${zoom}&level=surface&overlay=${weatherlayer}&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
 
     // Create the URL with variables
     function updateWindyURL() {
-    var windyUrl = `https://embed.windy.com/embed2.html?lat=${latitude}&lon=${longitude}&detailLat=${latitude}&detailLon=${longitude}&zoom=${zoom}&level=surface&overlay=clouds&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
+    var windyUrl = `https://embed.windy.com/embed2.html?lat=${latitude}&lon=${longitude}&detailLat=${latitude}&detailLon=${longitude}&zoom=${zoom}&level=surface&overlay=${weatherlayer}&product=ecmwf&menu=&message=&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1`;
 
       // Set the iframe's src attribute to the dynamic URL
       var iframe = document.getElementById("windy-iframe");
@@ -131,8 +132,11 @@
       var center = map.getCenter();
       latitude = center.lat;
       longitude = center.lng;
+      //weatherlayer = iframe.overlay;
       updateWindyURL(); // Update the Windy.com iframe URL
     });
+
+
 
   </script>
 </body>
